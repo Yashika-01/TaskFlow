@@ -30,4 +30,11 @@ public class User {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
 
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
 }
