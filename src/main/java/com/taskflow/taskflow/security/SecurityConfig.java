@@ -42,16 +42,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)  // Disable CSRF protection explicitly
+        http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/auth/**").permitAll() // Allow public access to authentication endpoints
-                                .requestMatchers(HttpMethod.GET, "/tasks/**").authenticated()
+                                .requestMatchers("/auth/**").permitAll() // Public access to authentication
+                                .requestMatchers(HttpMethod.GET, "/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")// Read access for users
+                                .requestMatchers(HttpMethod.POST, "/tasks/**").hasAnyAuthority("ROLE_ADMIN") // Write access for admin
+                                .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // Add JWT filter before UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {

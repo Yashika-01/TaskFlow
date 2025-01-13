@@ -15,11 +15,12 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    public String generateToken(String username) {
+    public String generateToken(String username, String role) {
         Key signingKey = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
         return Jwts.builder()
                 .setSubject(username)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour expiration
                 .signWith(signingKey, SignatureAlgorithm.HS256)
@@ -28,6 +29,10 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));  // Extract role claim
     }
 
     public <T> T extractClaim(String token, ClaimsResolver<T> claimsResolver) {
@@ -52,8 +57,10 @@ public class JwtUtil {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    public boolean validateToken(String token, String username, String requiredRole) {
+        return (username.equals(extractUsername(token)) &&
+                !isTokenExpired(token) &&
+                requiredRole.equals(extractRole(token)));
     }
 
     @FunctionalInterface
