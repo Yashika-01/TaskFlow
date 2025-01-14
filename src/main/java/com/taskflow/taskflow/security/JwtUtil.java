@@ -15,6 +15,8 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
+    private static final long REFRESH_TOKEN_VALIDITY = 604800000;
+
     public String generateToken(String username, String role) {
         Key signingKey = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
 
@@ -23,6 +25,18 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hour expiration
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(String username, String role) {
+        Key signingKey = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("role", role)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY)) // 7 days
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }

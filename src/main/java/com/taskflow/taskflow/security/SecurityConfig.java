@@ -2,6 +2,7 @@ package com.taskflow.taskflow.security;
 
 import com.taskflow.taskflow.filter.JwtAuthenticationFilter;
 import com.taskflow.taskflow.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
@@ -46,6 +48,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers("/auth/**").permitAll() // Public access to authentication
+                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/tasks/**").hasAnyAuthority("ROLE_USER", "ROLE_ADMIN")// Read access for users
                                 .requestMatchers(HttpMethod.POST, "/tasks/**").hasAnyAuthority("ROLE_ADMIN") // Write access for admin
                                 .anyRequest().authenticated()
