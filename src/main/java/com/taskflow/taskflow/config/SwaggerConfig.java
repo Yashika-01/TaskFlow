@@ -11,8 +11,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Taskflow API")
-                        .description("API documentation for Taskflow")
-                        .version("v1.0"));
+                .info(new Info().title("TaskFlow API")
+                        .description("TaskFlow API with Comments")
+                        .version("1.0"));
     }
 }

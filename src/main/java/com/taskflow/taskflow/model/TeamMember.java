@@ -18,6 +18,4 @@ public class TeamMember {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
-    // Getters and Setters
-    // ...
 }

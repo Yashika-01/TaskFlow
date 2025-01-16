@@ -24,6 +24,4 @@ public class Team {
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
-    // Getters and Setters
-    // ...
 }
